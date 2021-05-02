@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Temanku</string>
+    <string name="search_hint">Ketik Nama atau Nomor…</string>
+    <string name="nama">Nama</string>
+    <string name="telpon">Nomor Telpon</string>
+    <string name="copyright">Dibuat oleh Muhammad Fahmi Rasyid \n 20190140106</string>
+
+</resources>

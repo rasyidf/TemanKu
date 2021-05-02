@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:paddingLeft="@dimen/activity_margin"
+    android:paddingTop="@dimen/row_padding"
+    android:paddingRight="@dimen/activity_margin"
+    android:paddingBottom="@dimen/row_padding">
+
+    <com.microsoft.fluentui.persona.AvatarView
+        android:id="@+id/tbNama"
+        android:layout_width="@dimen/thumbnail"
+        android:layout_height="@dimen/thumbnail"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/row_padding"
+        app:avatarStyle="square" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/tbNama"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_toRightOf="@id/tbNama" />
+
+</RelativeLayout>
