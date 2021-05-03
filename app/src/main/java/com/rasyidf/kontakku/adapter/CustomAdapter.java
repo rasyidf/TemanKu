@@ -34,16 +34,13 @@ public class CustomAdapter
         implements Filterable {
 
   private final List<Teman> contactList;
-  private final FragmentManager FM;
   private final Context context;
   private List<Teman> contactListFiltered;
   private final ContactsAdapterListener listener;
-  private DBHandler DB;
 
   public class MyViewHolder extends RecyclerView.ViewHolder {
 
     private Teman selectedTeman;
-    private View currentView;
     public TextView name, phone;
     public AvatarView thumbnail;
     public DBHandler DB;
@@ -59,38 +56,15 @@ public class CustomAdapter
       phone = view.findViewById(R.id.phone);
       thumbnail = view.findViewById(R.id.tbNama);
 
-      this.currentView = view;
-
-
       thumbnail.setOnClickListener(
-              v -> {
-                ViewDetails(view);
-              }
+            v -> {
+              ViewDetails(view);
+            }
       );
-
-      BottomSheetItem[] sheets = new BottomSheetItem[]{
-              new BottomSheetItem(1, R.drawable.ic_info_24_regular, "Details"),
-              new BottomSheetItem(2, R.drawable.ic_edit_24_filled, "Sunting", "", true),
-              new BottomSheetItem(3, R.drawable.ic_delete_24_regular, "Hapus"),
-      };
-
-      ArrayList<BottomSheetItem> list = new ArrayList<>();
-      Collections.addAll(list, sheets);
-
-
-
-
       view.setOnClickListener(
               v -> {
                 Teman kontakItem = contactListFiltered.get(getAdapterPosition());
-                listener.onTemanSelected(kontakItem);
-                this.selectedTeman = kontakItem;
-                BottomSheet bottomSheet = BottomSheet.newInstance(
-                        list,
-                        new BottomSheetItem(4, R.drawable.ic_contact, selectedTeman.getName(), selectedTeman.getPhone() )
-                );
-                bottomSheet.show(FM, null);
-
+                listener.onTemanSelected(kontakItem, getAdapterPosition());
               }
       );
     }
@@ -111,15 +85,11 @@ public class CustomAdapter
   public CustomAdapter(
           Context context,
           List<Teman> contactList,
-          ContactsAdapterListener listener,
-          DBHandler db,
-          FragmentManager fm) {
+          ContactsAdapterListener listener) {
     this.context = context;
     this.listener = listener;
     this.contactList = contactList;
     this.contactListFiltered = contactList;
-    this.DB = db;
-    this.FM = fm;
   }
 
   @NotNull
@@ -184,6 +154,6 @@ public class CustomAdapter
   }
 
   public interface ContactsAdapterListener {
-    void onTemanSelected(Teman contact);
+    void onTemanSelected(Teman contact, int pos);
   }
 }

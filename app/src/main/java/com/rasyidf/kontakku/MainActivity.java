@@ -24,6 +24,7 @@ import com.microsoft.fluentui.appbarlayout.AppBarLayout;
 import com.microsoft.fluentui.bottomsheet.BottomSheet;
 import com.microsoft.fluentui.bottomsheet.BottomSheetItem;
 import com.microsoft.fluentui.search.Searchbar;
+import com.microsoft.fluentui.snackbar.Snackbar;
 import com.rasyidf.kontakku.adapter.CustomAdapter;
 import com.rasyidf.kontakku.database.DBHandler;
 import com.rasyidf.kontakku.database.Teman;
@@ -31,9 +32,8 @@ import com.rasyidf.kontakku.database.Teman;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static androidx.core.content.ContextCompat.startActivity;
 
 public class MainActivity
         extends AppCompatActivity
@@ -48,6 +48,9 @@ public class MainActivity
   AppBarLayout app_bar;
   List<Teman> listNama;
   private Teman selectedTeman;
+  private ArrayList<BottomSheetItem> bottomSheetList;
+  private ArrayList<BottomSheetItem> bottomSheetConfirm;
+  private int selectedIndex;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +60,26 @@ public class MainActivity
     initDB();
     initStatusbar();
 
+    InitBottomSheetItems();
+
     enumerateList();
     initList();
+  }
+
+  private void InitBottomSheetItems() {
+    BottomSheetItem[] sheets = new BottomSheetItem[]{
+            new BottomSheetItem(1, R.drawable.ic_info_24_regular, "Details"),
+            new BottomSheetItem(2, R.drawable.ic_edit_24_filled, "Sunting", "", true),
+            new BottomSheetItem(3, R.drawable.ic_delete_24_regular, "Hapus"),
+    };
+    BottomSheetItem[] sheets2 = new BottomSheetItem[]{
+            new BottomSheetItem(41,"Ya"),
+            new BottomSheetItem(42,"Tidak"), 
+    };
+    bottomSheetList = new ArrayList<>();
+    bottomSheetConfirm = new ArrayList<>();
+    Collections.addAll(bottomSheetList, sheets);
+    Collections.addAll(bottomSheetConfirm, sheets2);
   }
 
   private void initDB() {
@@ -66,31 +87,31 @@ public class MainActivity
   }
 
   private void enumerateList() {
-    Teman[] contacs = new Teman[]{
-            new Teman(1, "Ani", "085123456789"),
-            new Teman(2, "Budi", "085123456789"),
-            new Teman(3, "Caca", "085123456789"),
-            new Teman(4, "Danu", "085123456789"),
-            new Teman(5, "Ervan", "085123456789"),
-            new Teman(6, "Fatimah", "085123456789"),
-            new Teman(7, "Inayah", "085123456789"),
-            new Teman(8, "Ilham", "085123456789"),
-            new Teman(9, "Eris", "085123456789"),
-            new Teman(10, "Gita", "085123456789"),
-            new Teman(11, "Maul", "085123456789"),
-            new Teman(12, "Fikri", "085123456789"),
-            new Teman(13, "Vian", "085123456789"),
-            new Teman(14, "Lutfi", "085123456789"),
-            new Teman(15, "Sobari", "085123456789"),
-            new Teman(16, "Hakim", "085123456789"),
-            new Teman(17, "Tyas", "085123456789"),
-            new Teman(18, "Rasyid", "085123456789"),
-    };
-    listNama = new ArrayList<>();
-    for (Teman ki : contacs) {
-      this.listNama.add(ki);
-      this.dbHandler.insert(ki);
-    }
+//    Teman[] contacs = new Teman[]{
+//            new Teman(1, "Ani", "085123456789"),
+//            new Teman(2, "Budi", "085123456789"),
+//            new Teman(3, "Caca", "085123456789"),
+//            new Teman(4, "Danu", "085123456789"),
+//            new Teman(5, "Ervan", "085123456789"),
+//            new Teman(6, "Fatimah", "085123456789"),
+//            new Teman(7, "Inayah", "085123456789"),
+//            new Teman(8, "Ilham", "085123456789"),
+//            new Teman(9, "Eris", "085123456789"),
+//            new Teman(10, "Gita", "085123456789"),
+//            new Teman(11, "Maul", "085123456789"),
+//            new Teman(12, "Fikri", "085123456789"),
+//            new Teman(13, "Vian", "085123456789"),
+//            new Teman(14, "Lutfi", "085123456789"),
+//            new Teman(15, "Sobari", "085123456789"),
+//            new Teman(16, "Hakim", "085123456789"),
+//            new Teman(17, "Tyas", "085123456789"),
+//            new Teman(18, "Rasyid", "085123456789"),
+//    };
+//    listNama = new ArrayList<>();
+//    for (Teman ki : contacs) {
+//      this.listNama.add(ki);
+//      this.dbHandler.insert(ki);
+//    }
     this.listNama = this.dbHandler.getAll();
   }
 
@@ -105,9 +126,7 @@ public class MainActivity
             new CustomAdapter(
                     getApplicationContext(),
                     listNama,
-                    this,
-                    this.dbHandler,
-                    fm
+                    this
             );
     mRecyclerView.setAdapter(mAdapter);
 
@@ -162,14 +181,14 @@ public class MainActivity
   }
 
   private void initStatusbar() {
-    Drawable searchIcon = ContextCompat.getDrawable(getApplicationContext(),R.drawable.ms_ic_search_24_filled);
+    Drawable searchIcon = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ms_ic_search_24_filled);
     app_bar = findViewById(R.id.app_bar);
     app_bar.setScrollBehavior(AppBarLayout.ScrollBehavior.COLLAPSE_TOOLBAR);
     searchbar = new Searchbar(this);
     searchbar.setOnQueryTextListener(this);
     searchbar.setActionMenuView(false);
     searchbar.setLeft(16);
-    app_bar.getToolbar().setTitle("Kontak Ku");
+    app_bar.getToolbar().setTitle(getString(R.string.app_name));
     app_bar.setAccessoryView(searchbar);
   }
 
@@ -186,52 +205,57 @@ public class MainActivity
   }
 
   @Override
-  public void onTemanSelected(Teman contact) {
+  public void onTemanSelected(Teman contact, int pos) {
     selectedTeman = contact;
+    selectedIndex = pos;
+    BottomSheet bottomSheet = BottomSheet.newInstance(
+            bottomSheetList,
+            new BottomSheetItem(4, R.drawable.ic_contact, selectedTeman.getName(), selectedTeman.getPhone())
+    );
+    bottomSheet.show(getSupportFragmentManager(), null);
   }
 
   @Override
   public void onBottomSheetItemClick(@NotNull BottomSheetItem bottomSheetItem) {
-    if (selectedTeman != null){
-    Intent i = new Intent(
-            getApplicationContext(),
-            TemanDetailActivity.class
-    );
-    Bundle b = new Bundle();
-    b.putString("nama", selectedTeman.getName());
-    b.putString("nomor", selectedTeman.getPhone());
-    switch (bottomSheetItem.getId()) {
-      case 1:
-        b.putBoolean("edit", false);
-        i.putExtras(b);
-        startActivity(i, b);
-        break;
-      case 2:
-        b.putBoolean("edit", true);
-        i.putExtras(b);
-        startActivity( i, b);
-        break;
-      case 3:
-        new MaterialAlertDialogBuilder(getApplicationContext())
-                .setTitle("Konfirmasi")
-                .setMessage("Yakin Ingin menghapus?")
-                .setPositiveButton(
-                        "Ya",
-                        (dialog, which) -> {
-                          if (dbHandler == null) {
-                            dbHandler = new DBHandler(getApplicationContext());
-                          }
+    if (selectedTeman != null) {
+      Intent i = new Intent(
+              getApplicationContext(),
+              TemanDetailActivity.class
+      );
+      Bundle b = new Bundle();
+      b.putString("nama", selectedTeman.getName());
+      b.putString("nomor", selectedTeman.getPhone());
+      switch (bottomSheetItem.getId()) {
+        case 1:
+          b.putBoolean("edit", false);
+          i.putExtras(b);
+          startActivity(i, b);
+          break;
+        case 2:
+          b.putBoolean("edit", true);
+          i.putExtras(b);
+          startActivity(i, b);
+          break;
+        case 3:
+          BottomSheet bottomSheet = BottomSheet.newInstance(
+                  bottomSheetConfirm,
+                  new BottomSheetItem(1,  "Apakah anda ingin menghapus kontak ini?")
+          );
+          bottomSheet.show(getSupportFragmentManager(), null);
+          break;
+        case 41:
+            if (dbHandler == null) {
+              dbHandler = new DBHandler(getApplicationContext());
+            }
 
-                          dbHandler.delete(selectedTeman);
-                        }
-                )
-                .setNegativeButton("Tidak", (dialog, which) -> {})
-                .show();
-
-        break;
-      default:
-        break;
-    }}
+            dbHandler.delete(selectedTeman);
+            mAdapter.notifyItemRemoved(selectedIndex); 
+            Snackbar.Companion.make(getWindow().getDecorView(), "Berhasil Dihapus", 2000, Snackbar.Style.ANNOUNCEMENT).show();
+          break;
+        default:
+          break;
+      }
+    }
   }
 
 }
