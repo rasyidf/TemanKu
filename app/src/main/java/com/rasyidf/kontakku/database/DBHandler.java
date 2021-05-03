@@ -41,12 +41,12 @@ public class DBHandler extends SQLiteOpenHelper {
     onCreate(db);
   }
 
-  public void insert(Teman shop) {
+  public void insert(Teman item) {
     SQLiteDatabase db = this.getWritableDatabase();
 
     ContentValues values = new ContentValues();
-    values.put(TemanContract.TemanEntry.COLUMN_NAME_NAME, shop.getName());
-    values.put(TemanContract.TemanEntry.COLUMN_NAME_PHONE, shop.getPhone());
+    values.put(TemanContract.TemanEntry.COLUMN_NAME_NAME, item.getName());
+    values.put(TemanContract.TemanEntry.COLUMN_NAME_PHONE, item.getPhone());
 
     db.insert(TemanContract.TemanEntry.TABLE_NAME, null, values);
     db.close();

@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity
         extends AppCompatActivity
@@ -121,7 +122,6 @@ public class MainActivity
     mLayoutManager = new LinearLayoutManager(getApplicationContext());
     mRecyclerView.setLayoutManager(mLayoutManager);
     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-    FragmentManager fm = getSupportFragmentManager();
     mAdapter =
             new CustomAdapter(
                     getApplicationContext(),
@@ -132,10 +132,10 @@ public class MainActivity
 
     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
             mRecyclerView.getContext(),
-            DividerItemDecoration.VERTICAL
+            DividerItemDecoration.HORIZONTAL
     );
     dividerItemDecoration.setDrawable(
-            ContextCompat.getDrawable(MainActivity.this, R.drawable.ms_row_divider)
+            Objects.requireNonNull(ContextCompat.getDrawable(MainActivity.this, R.drawable.ms_row_divider))
     );
     mRecyclerView.addItemDecoration(dividerItemDecoration);
   }
@@ -145,6 +145,8 @@ public class MainActivity
     getMenuInflater().inflate(R.menu.menu_main, menu);
     return true;
   }
+
+
 
   @Override
   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -181,6 +183,7 @@ public class MainActivity
   }
 
   private void initStatusbar() {
+
     Drawable searchIcon = ContextCompat.getDrawable(getApplicationContext(), R.drawable.ms_ic_search_24_filled);
     app_bar = findViewById(R.id.app_bar);
     app_bar.setScrollBehavior(AppBarLayout.ScrollBehavior.COLLAPSE_TOOLBAR);
@@ -190,6 +193,19 @@ public class MainActivity
     searchbar.setLeft(16);
     app_bar.getToolbar().setTitle(getString(R.string.app_name));
     app_bar.setAccessoryView(searchbar);
+    findViewById(R.id.fab).setOnClickListener(v -> {
+      Intent i = new Intent(
+              getApplicationContext(),
+              TemanDetailActivity.class
+      );
+      Bundle b = new Bundle();
+      b.putString("nama","");
+      b.putString("nomor", "");
+      b.putBoolean("new", true);
+      i.putExtras(b);
+      startActivityForResult(i, 1);
+
+    });
   }
 
   @Override
@@ -216,6 +232,22 @@ public class MainActivity
   }
 
   @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (resultCode == RESULT_OK) { 
+      mAdapter.notifyDataSetChanged();
+
+      if (requestCode == 1) {
+        Snackbar.Companion.make(getWindow().getDecorView(), "Berhasil Di Tambahkan", 2000, Snackbar.Style.ANNOUNCEMENT).show();
+      }  else if (requestCode == 2) {
+        Snackbar.Companion.make(getWindow().getDecorView(), "Perubahan Berhasil Disimpan", 2000, Snackbar.Style.ANNOUNCEMENT).show();
+      }
+    }
+
+  }
+
+  @Override
   public void onBottomSheetItemClick(@NotNull BottomSheetItem bottomSheetItem) {
     if (selectedTeman != null) {
       Intent i = new Intent(
@@ -225,16 +257,17 @@ public class MainActivity
       Bundle b = new Bundle();
       b.putString("nama", selectedTeman.getName());
       b.putString("nomor", selectedTeman.getPhone());
+      b.putInt("id", selectedTeman.getId());
       switch (bottomSheetItem.getId()) {
         case 1:
           b.putBoolean("edit", false);
           i.putExtras(b);
-          startActivity(i, b);
+          startActivity(i);
           break;
         case 2:
           b.putBoolean("edit", true);
           i.putExtras(b);
-          startActivity(i, b);
+          startActivityForResult(i,2);
           break;
         case 3:
           BottomSheet bottomSheet = BottomSheet.newInstance(
